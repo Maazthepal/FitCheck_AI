@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useCallback, memo } from "react"
 import useOutfitStore from "@/store/useOutfitStore"
-import { RotateCcw, Copy, Check, Share2 } from "lucide-react"
+import { RotateCcw, Check } from "lucide-react"
+import ShareButton from "@/app/results/shareButton"
 import Image from "next/image"
+
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
 
@@ -316,49 +318,6 @@ const OutfitStrengths = memo(({ scores, proportions }: { scores: any; proportion
 })
 OutfitStrengths.displayName = "OutfitStrengths"
 
-// ─── Share Button ─────────────────────────────────────────────────────────────
-
-const ShareButton = memo(({ scores, styleTypes }: { scores: any; styleTypes: any[] }) => {
-    const { copied, copy } = useClipboard(3000)
-
-    const handleShare = useCallback(() => {
-        const text = `
-🔥 My Outfit Rating
-
-Drip Score:       ${scores.drip_score}/100
-Top Style:        ${styleTypes[0]?.name} (${styleTypes[0]?.confidence}%)
-Color Harmony:    ${scores.color_harmony}/100
-Outfit Balance:   ${scores.outfit_balance}/100
-Style Confidence: ${scores.style_confidence}/100
-
-Rated by FitCheck AI
-    `.trim()
-        copy(text)
-    }, [scores, styleTypes, copy])
-
-    return (
-        <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleShare}
-            aria-label="Share your fit results"
-            style={{
-                display: "flex", alignItems: "center", gap: "0.5rem",
-                padding: "0.6rem 1.2rem", borderRadius: "999px",
-                border: "1px solid rgba(155,93,229,0.3)",
-                background: copied ? "rgba(34,197,94,0.1)" : "rgba(155,93,229,0.08)",
-                color: copied ? "#22c55e" : "#9b5de5",
-                cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-                transition: "all 0.2s ease",
-            }}
-        >
-            {copied ? <Check size={14} /> : <Share2 size={14} />}
-            {copied ? "Copied to clipboard!" : "Share My Fit"}
-        </motion.button>
-    )
-})
-ShareButton.displayName = "ShareButton"
-
 // ─── Drip Label ───────────────────────────────────────────────────────────────
 
 function getDripLabel(score: number): string {
@@ -383,7 +342,30 @@ export default function ResultsPage() {
         if (!analysis) router.push("/upload")
     }, [analysis, router])
 
-    if (!analysis) return null
+    if (!analysis) return (
+  <main style={{
+    minHeight: "100vh",
+    display: "flex", alignItems: "center", justifyContent: "center",
+  }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      style={{ textAlign: "center" }}
+    >
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        style={{
+          width: "40px", height: "40px", borderRadius: "50%",
+          border: "2px solid #1a1a1a",
+          borderTop: "2px solid #9b5de5",
+          margin: "0 auto 1rem",
+        }}
+      />
+      <p style={{ color: "#444", fontSize: "0.9rem" }}>Redirecting...</p>
+    </motion.div>
+  </main>
+)
 
     const { style_types, scores, suggestions, dominant_colors, proportions, fit_balance } = analysis
 
@@ -432,7 +414,12 @@ export default function ResultsPage() {
                 </div>
 
                 <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                    <ShareButton scores={scores} styleTypes={style_types} />
+                    <ShareButton
+                        scores={scores}
+                        styleTypes={style_types}
+                        image={image}
+                        dominantColors={dominant_colors}
+                    />
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}

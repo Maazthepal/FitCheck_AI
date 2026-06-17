@@ -2,8 +2,9 @@
 
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import { useRouter } from "next/navigation"
-import { Sparkles, Zap, Eye, ArrowRight, Star, Scan, } from "lucide-react"
+import { ArrowRight, Star, Scan, } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useWindowSize } from "@/lib/hooks"
 
 const ROTATING_WORDS = ["Outfit.", "Drip.", "Fit.", "Style.", "Look."]
 
@@ -25,6 +26,8 @@ export default function LandingPage() {
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
   const [hovering, setHovering] = useState(false)
+  const { width } = useWindowSize()
+  const isMobile = width < 768
 
   // Rotate words
   useEffect(() => {
@@ -108,7 +111,7 @@ export default function LandingPage() {
       </div>
 
       {/* Floating score cards */}
-      {FLOATING_SCORES.map((score, i) => (
+      {!isMobile && FLOATING_SCORES.map((score, i) => (
         <motion.div
           key={i}
           initial={{ opacity: 0, scale: 0.8 }}
@@ -281,69 +284,69 @@ export default function LandingPage() {
           transition={{ delay: 0.7 }}
           style={{
             display: "flex",
-            gap: "2rem",
+            gap: isMobile ? "1.5rem" : "2rem",
             justifyContent: "center",
             marginTop: "3.5rem",
             flexWrap: "wrap",
+        }}
+        >
+        {[
+          { value: "FREE", label: "No signup needed" },
+          { value: "INSTANT", label: "Real-time analysis" },
+          { value: "100", label: "Point drip scale" },
+        ].map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 + i * 0.1 }}
+            style={{ textAlign: "center" }}
+          >
+            <div style={{
+              fontSize: "1.5rem", fontWeight: 800, color: "white",
+              background: "linear-gradient(135deg, #9b5de5, #00bbf9)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>
+              {stat.value}
+            </div>
+            <div style={{ fontSize: "0.75rem", color: "#555", marginTop: "0.2rem" }}>
+              {stat.label}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+
+      {/* Bottom ticker */ }
+  <div
+    style={{
+      position: "fixed", bottom: 0, left: 0, right: 0,
+      borderTop: "1px solid #1a1a1a",
+      background: "rgba(8,8,8,0.8)",
+      backdropFilter: "blur(10px)",
+      overflow: "hidden", padding: "0.75rem 0", zIndex: 10,
+    }}
+  >
+    <motion.div
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      style={{ display: "flex", gap: "3rem", whiteSpace: "nowrap", width: "max-content" }}
+    >
+      {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+        <span
+          key={i}
+          style={{
+            fontSize: "0.75rem", color: "#333",
+            letterSpacing: "0.15em", fontWeight: 600,
+            display: "flex", alignItems: "center", gap: "0.75rem",
           }}
         >
-          {[
-            { value: "FREE", label: "No signup needed" },
-            { value: "INSTANT", label: "Real-time analysis" },
-            { value: "100", label: "Point drip scale" },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 + i * 0.1 }}
-              style={{ textAlign: "center" }}
-            >
-              <div style={{
-                fontSize: "1.5rem", fontWeight: 800, color: "white",
-                background: "linear-gradient(135deg, #9b5de5, #00bbf9)",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              }}>
-                {stat.value}
-              </div>
-              <div style={{ fontSize: "0.75rem", color: "#555", marginTop: "0.2rem" }}>
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Bottom ticker */}
-      <div
-        style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          borderTop: "1px solid #1a1a1a",
-          background: "rgba(8,8,8,0.8)",
-          backdropFilter: "blur(10px)",
-          overflow: "hidden", padding: "0.75rem 0", zIndex: 10,
-        }}
-      >
-        <motion.div
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          style={{ display: "flex", gap: "3rem", whiteSpace: "nowrap", width: "max-content" }}
-        >
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <span
-              key={i}
-              style={{
-                fontSize: "0.75rem", color: "#333",
-                letterSpacing: "0.15em", fontWeight: 600,
-                display: "flex", alignItems: "center", gap: "0.75rem",
-              }}
-            >
-              <Star size={8} fill="#333" />
-              {item}
-            </span>
-          ))}
-        </motion.div>
-      </div>
-    </main>
+          <Star size={8} fill="#333" />
+          {item}
+        </span>
+      ))}
+    </motion.div>
+  </div>
+    </main >
   )
 }

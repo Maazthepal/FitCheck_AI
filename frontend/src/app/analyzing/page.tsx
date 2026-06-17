@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import useOutfitStore from "@/store/useOutfitStore"
 import { analyzeOutfit } from "@/lib/api"
+import { useWindowSize } from "@/lib/hooks"
 
 const LOADING_TEXTS = [
   "Reading your drip...",
@@ -21,32 +22,43 @@ export default function AnalyzingPage() {
   const [textIndex, setTextIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
+  const { width } = useWindowSize()
+  const isMobile = width < 768
+
+  // Redirect guard
+  useEffect(() => {
+    if (!file) {
+      router.push("/upload")
+    } else {
+      setReady(true)
+    }
+  }, [file, router])
 
   // Cycle loading texts
   useEffect(() => {
+    if (!ready) return
     const interval = setInterval(() => {
       setTextIndex((prev) => (prev + 1) % LOADING_TEXTS.length)
     }, 1800)
     return () => clearInterval(interval)
-  }, [])
+  }, [ready])
 
   // Animate progress bar
   useEffect(() => {
+    if (!ready) return
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 90) return prev  // stop at 90, real completion pushes to 100
+        if (prev >= 90) return prev
         return prev + Math.random() * 8
       })
     }, 400)
     return () => clearInterval(interval)
-  }, [])
+  }, [ready])
 
-  // Actual API call
+  // API call
   useEffect(() => {
-    if (!file) {
-      router.push("/upload")
-      return
-    }
+    if (!ready || !file) return
 
     const run = async () => {
       try {
@@ -60,21 +72,38 @@ export default function AnalyzingPage() {
     }
 
     run()
-  }, [file, router, setAnalysis])
+  }, [ready, file, router, setAnalysis])
+
+  // Spinner while redirecting
+  if (!ready) return (
+    <main style={{
+      minHeight: "100vh",
+      display: "flex", alignItems: "center", justifyContent: "center",
+    }}>
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        style={{
+          width: "40px", height: "40px", borderRadius: "50%",
+          border: "2px solid #1a1a1a",
+          borderTop: "2px solid #9b5de5",
+        }}
+      />
+    </main>
+  )
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <main style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: isMobile ? "1.5rem 1rem" : "2rem",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+
       {/* Ambient glow */}
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
@@ -88,11 +117,16 @@ export default function AnalyzingPage() {
         }}
       />
 
-      <div style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: "480px", width: "100%" }}>
-
+      <div style={{
+        position: "relative", zIndex: 2,
+        textAlign: "center",
+        maxWidth: "480px",
+        width: "100%",
+        padding: isMobile ? "0 1rem" : "0",
+      }}>
         {!error ? (
           <>
-            {/* Spinning ring */}
+            {/* Spinning rings */}
             <div style={{ position: "relative", width: "120px", height: "120px", margin: "0 auto 2.5rem" }}>
               <motion.div
                 animate={{ rotate: 360 }}
@@ -116,7 +150,6 @@ export default function AnalyzingPage() {
                   borderLeft: "2px solid #f15bb5",
                 }}
               />
-              {/* Center dot */}
               <motion.div
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -142,9 +175,9 @@ export default function AnalyzingPage() {
                 exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
                 transition={{ duration: 0.4 }}
                 style={{
-                  fontSize: "1.4rem", fontWeight: 700,
-                  color: "white", marginBottom: "0.75rem",
-                  letterSpacing: "-0.02em",
+                  fontSize: isMobile ? "1.2rem" : "1.4rem",
+                  fontWeight: 700, color: "white",
+                  marginBottom: "0.75rem", letterSpacing: "-0.02em",
                 }}
               >
                 {LOADING_TEXTS[textIndex]}
@@ -174,11 +207,8 @@ export default function AnalyzingPage() {
             <p style={{ fontSize: "0.8rem", color: "#333" }}>
               {Math.min(Math.round(progress), 100)}%
             </p>
-
-            {/* Scanning image preview */}
           </>
         ) : (
-          /* Error state */
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}

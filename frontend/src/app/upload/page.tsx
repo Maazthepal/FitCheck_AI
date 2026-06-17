@@ -7,6 +7,7 @@ import { useDropzone } from "react-dropzone"
 import { Upload, X, ArrowRight, ImageIcon, AlertCircle, Zap, Eye, Shirt } from "lucide-react"
 import useOutfitStore from "@/store/useOutfitStore"
 import Image from "next/image"
+import { useWindowSize } from "@/lib/hooks"
 
 const OUTFIT_IMAGES = [
     { src: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&q=80", rotate: -8, delay: 0 },
@@ -28,6 +29,9 @@ export default function UploadPage() {
     const [preview, setPreview] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
+    const { width } = useWindowSize()
+    const isMobile = width < 768
+    const isTablet = width < 1024
 
     const onDrop = useCallback((accepted: File[], rejected: any[]) => {
         setError(null)
@@ -122,11 +126,9 @@ export default function UploadPage() {
                 {/* Bento Grid */}
                 <div style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    gridTemplateRows: "auto",
+                    gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "1fr 1fr 1fr",
                     gap: "1rem",
                 }}>
-
                     {/* LEFT COLUMN — Tilted outfit cards */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
@@ -134,7 +136,7 @@ export default function UploadPage() {
                         transition={{ delay: 0.2 }}
                         style={{
                             gridColumn: "1",
-                            display: "flex", flexDirection: "column",
+                            display: isMobile ? "none" : "flex",
                             gap: "1rem", alignItems: "center",
                             justifyContent: "center", padding: "1rem",
                         }}
@@ -358,7 +360,7 @@ export default function UploadPage() {
                         transition={{ delay: 0.2 }}
                         style={{
                             gridColumn: "3",
-                            display: "flex", flexDirection: "column",
+                            display: isMobile ? "none" : "flex",
                             gap: "1rem", alignItems: "center",
                             justifyContent: "center", padding: "1rem",
                         }}
@@ -401,7 +403,7 @@ export default function UploadPage() {
                     transition={{ delay: 0.6 }}
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(4, 1fr)",
+                        gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
                         gap: "0.75rem",
                         marginTop: "1.5rem",
                     }}
