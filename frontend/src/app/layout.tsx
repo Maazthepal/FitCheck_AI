@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Outfit Rater — Rate Your Fit",
+  title: "FitCheck AI — Rate Your Fit",
   description: "AI-powered outfit analysis. Get your drip score instantly.",
 }
 
