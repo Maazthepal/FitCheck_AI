@@ -14,13 +14,16 @@ app = FastAPI(
 # CORS — allows frontend to call backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000",
-                   "https://fitcheck-ai-maaz.vercel.app"
-                   ],  # Next.js dev server
+    allow_origins=[
+        "http://localhost:3000",
+        "https://fitcheck-ai-maaz.vercel.app",
+        "https://*.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(router, prefix="/api/v1")
 
