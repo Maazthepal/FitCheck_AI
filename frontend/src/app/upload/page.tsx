@@ -179,11 +179,8 @@ export default function UploadPage() {
                         {/* Dropzone or Preview */}
                         <AnimatePresence mode="wait">
                             {!preview ? (
-                                <motion.div
+                                <div
                                     key="dropzone"
-                                    initial={{ opacity: 0, scale: 0.97 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.97 }}
                                     {...getRootProps()}
                                     style={{
                                         border: `2px dashed ${isDragActive ? "#9b5de5" : "#2a2a2a"}`,
@@ -239,13 +236,10 @@ export default function UploadPage() {
                                     }}>
                                         <ImageIcon size={12} /> JPEG · PNG · WEBP · Max 10MB
                                     </div>
-                                </motion.div>
+                                </div>
                             ) : (
-                                <motion.div
+                                <div
                                     key="preview"
-                                    initial={{ opacity: 0, scale: 0.97 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.97 }}
                                     style={{
                                         borderRadius: "24px", overflow: "hidden",
                                         border: "1px solid #1f1f1f", position: "relative",
@@ -292,7 +286,7 @@ export default function UploadPage() {
                                             background: "#22c55e", boxShadow: "0 0 8px #22c55e",
                                         }} />
                                     </div>
-                                </motion.div>
+                                </div>
                             )}
                         </AnimatePresence>
 
