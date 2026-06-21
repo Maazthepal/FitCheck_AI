@@ -15,7 +15,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000",
-                   "https://fitcheck-ai-maaz.vercel.app/"
+                   "https://fitcheck-ai-maaz.vercel.app"
                    ],  # Next.js dev server
     allow_credentials=True,
     allow_methods=["*"],
