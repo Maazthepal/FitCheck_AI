@@ -9,8 +9,6 @@ logger = get_logger(__name__)
 
 genai.configure(api_key=settings.GENERATIVE_AI_API_KEY)
 
-# Use the short name 'gemini-1.5-flash'. 
-# We add generation_config to strictly enforce JSON responses.
 model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
     generation_config={"response_mime_type": "application/json"}

@@ -3,7 +3,7 @@
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { LogOut, User, Clock, Home } from "lucide-react"
+import { LogOut, User, Clock, Home, Swords } from "lucide-react"
 import Link from "next/link"
 
 export default function Navbar() {
@@ -52,6 +52,7 @@ export default function Navbar() {
         <NavLink href="/upload" icon={<Home size={15} />} label="Rate Fit" />
         <NavLink href="/history" icon={<Clock size={15} />} label="History" />
         <NavLink href="/profile" icon={<User size={15} />} label="Profile" />
+        <NavLink href="/compare" icon={<Swords size={15} />} label="Battle" />
 
         {/* User + Sign out */}
         <div style={{

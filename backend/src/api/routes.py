@@ -4,6 +4,7 @@ from src.core.color import extract_colors
 from src.core.scorer import build_final_response
 from src.utils.image import validate_image, preprocess_image
 from src.utils.logger import get_logger
+from src.core.comparator import compare_outfits
 
 logger = get_logger(__name__)
 
@@ -52,6 +53,37 @@ async def analyze(file: UploadFile = File(...)):
     logger.info(f"Analysis complete. Drip Score: {final['scores']['drip_score']}")
     return final
 
+@router.post("/compare")
+async def compare(
+    file1: UploadFile = File(...),
+    file2: UploadFile = File(...)
+):
+    logger.info("Outfit comparison request received")
+
+    try:
+        bytes1 = await file1.read()
+        bytes2 = await file2.read()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Failed to read images")
+
+    # Validate both
+    for b, name in [(bytes1, file1.filename), (bytes2, file2.filename)]:
+        val = validate_image(b)
+        if not val["valid"]:
+            raise HTTPException(status_code=422, detail=val["error"])
+
+    # Preprocess both
+    processed1 = preprocess_image(bytes1)
+    processed2 = preprocess_image(bytes2)
+
+    # Compare
+    result = compare_outfits(processed1, processed2)
+
+    if result.get("error"):
+        raise HTTPException(status_code=500, detail=result["error"])
+
+    logger.info("Comparison complete")
+    return result
 
 @router.get("/health")
 async def health():

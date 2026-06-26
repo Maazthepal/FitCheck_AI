@@ -42,6 +42,26 @@ export async function saveAnalysis(
     })
   } catch (error) {
     console.error("Failed to save analysis:", error)
-    // Don't throw — saving failing shouldn't break the app
   }
+}
+
+export async function compareOutfits(
+  file1: File,
+  file2: File
+): Promise<any> {
+  const formData = new FormData()
+  formData.append("file1", file1)
+  formData.append("file2", file2)
+
+  const response = await fetch(
+    `${API_URL}/api/v1/compare`,
+    { method: "POST", body: formData }
+  )
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.detail || "Comparison failed")
+  }
+
+  return response.json()
 }
