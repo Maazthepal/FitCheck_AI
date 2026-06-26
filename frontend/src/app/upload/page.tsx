@@ -8,6 +8,8 @@ import { Upload, X, ArrowRight, ImageIcon, AlertCircle, Zap, Eye, Shirt } from "
 import useOutfitStore from "@/store/useOutfitStore"
 import Image from "next/image"
 import { useWindowSize } from "@/lib/hooks"
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
 const OUTFIT_IMAGES = [
     { src: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&q=80", rotate: -8, delay: 0 },
@@ -23,7 +25,7 @@ const TIPS = [
     { icon: <ImageIcon size={14} />, text: "Mirror selfies work perfectly fine" },
 ]
 
-export default function UploadPage() {
+export default async function UploadPage() {
     const router = useRouter()
     const { setImage, setFile } = useOutfitStore()
     const [preview, setPreview] = useState<string | null>(null)
@@ -32,6 +34,11 @@ export default function UploadPage() {
     const { width } = useWindowSize()
     const isMobile = width < 768
     const isTablet = width < 1024
+    const session = await auth()
+    
+    if (!session) {
+        redirect("/login")
+    }
 
     const onDrop = useCallback((accepted: File[], rejected: any[]) => {
         setError(null)

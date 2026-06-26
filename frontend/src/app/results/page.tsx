@@ -1,12 +1,13 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { useEffect, useState, useCallback, memo } from "react"
 import useOutfitStore from "@/store/useOutfitStore"
 import { RotateCcw, Check } from "lucide-react"
 import ShareButton from "@/app/results/shareButton"
 import Image from "next/image"
+import { auth } from "@/lib/auth"
 
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
@@ -330,10 +331,15 @@ function getDripLabel(score: number): string {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function ResultsPage() {
+export default async function ResultsPage() {
     const router = useRouter()
     const { analysis, image, reset } = useOutfitStore()
     const { width } = useWindowSize()
+    const session = await auth()
+    
+    if (!session) {
+        redirect("/login")
+    }
 
     const isMobile = width < 768
     const isTablet = width < 1024

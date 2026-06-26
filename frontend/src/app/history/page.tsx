@@ -2,9 +2,11 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { useWindowSize } from "@/lib/hooks"
 import { Clock, Zap, ArrowRight, Trash2 } from "lucide-react"
+import { auth } from "@/lib/auth"
+
 
 interface AnalysisRecord {
   id: string
@@ -43,13 +45,18 @@ function timeAgo(dateStr: string): string {
   return date.toLocaleDateString()
 }
 
-export default function HistoryPage() {
+export default async function HistoryPage() {
   const router = useRouter()
   const { width } = useWindowSize()
   const isMobile = width < 768
   const [analyses, setAnalyses] = useState<AnalysisRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const session = await auth()
+
+  if (!session) {
+    redirect("/login")
+  }
 
   useEffect(() => {
     const fetchHistory = async () => {
