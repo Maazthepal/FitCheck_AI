@@ -18,3 +18,30 @@ export async function analyzeOutfit(file: File): Promise<OutfitAnalysis> {
 
   return response.json()
 }
+
+export async function saveAnalysis(
+  analysis: OutfitAnalysis,
+  imageUrl?: string
+): Promise<void> {
+  try {
+    await fetch("/api/analysis/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        imageUrl: imageUrl || null,
+        dripScore: analysis.scores.drip_score,
+        colorHarmony: analysis.scores.color_harmony,
+        outfitBalance: analysis.scores.outfit_balance,
+        styleConfidence: analysis.scores.style_confidence,
+        styleTypes: analysis.style_types,
+        proportions: analysis.proportions,
+        fitBalance: analysis.fit_balance,
+        suggestions: analysis.suggestions,
+        dominantColors: analysis.dominant_colors,
+      }),
+    })
+  } catch (error) {
+    console.error("Failed to save analysis:", error)
+    // Don't throw — saving failing shouldn't break the app
+  }
+}

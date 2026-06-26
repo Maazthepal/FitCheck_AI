@@ -65,7 +65,7 @@ const ScoreRing = memo(({ score, color, size = 120 }: {
         <div
             role="img"
             aria-label={`Score: ${score} out of 100`}
-            style={{ position: "relative", width: size, height: size }}
+            style={{ position: "relative", width: size, height: size,  }}
         >
             <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
                 <circle

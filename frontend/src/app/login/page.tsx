@@ -3,9 +3,10 @@
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Eye, EyeOff, ArrowRight, Check } from "lucide-react"
+import { Eye, EyeOff, ArrowRight } from "lucide-react"
+import { Suspense } from "react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,9 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const searchParams = useSearchParams();
-  const verified = searchParams.get("verified");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -96,23 +95,6 @@ export default function LoginPage() {
             Sign in to rate your fits
           </p>
         </div>
-
-        {verified && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{
-              padding: "0.75rem 1rem", borderRadius: "10px",
-              background: "rgba(34,197,94,0.08)",
-              border: "1px solid rgba(34,197,94,0.2)",
-              color: "#22c55e", fontSize: "0.85rem",
-              marginBottom: "1rem",
-              display: "flex", alignItems: "center", gap: "0.5rem",
-            }}
-          >
-            <Check size={16} /> Email verified! You can now sign in.
-          </motion.div>
-        )}
 
         {/* Form Card */}
         <div style={{

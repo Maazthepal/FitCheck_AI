@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import useOutfitStore from "@/store/useOutfitStore"
-import { analyzeOutfit } from "@/lib/api"
+import { analyzeOutfit, saveAnalysis } from "@/lib/api"
 import { useWindowSize } from "@/lib/hooks"
 
 const LOADING_TEXTS = [
@@ -65,6 +65,9 @@ export default function AnalyzingPage() {
         const result = await analyzeOutfit(file)
         setAnalysis(result)
         setProgress(100)
+
+        await saveAnalysis(result)
+
         setTimeout(() => router.push("/results"), 500)
       } catch (err: any) {
         setError(err.message || "Something went wrong. Please try again.")
